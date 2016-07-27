@@ -27,6 +27,10 @@ hab_env_vars.each do |e|
     end
 end
 
+describe file("results") do
+    it { should_not exist }
+end
+
 describe user('hab') do
     it { should exist }
 end
