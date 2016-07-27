@@ -122,10 +122,14 @@ describe "Habitat CLI" do
     after(:all) do
         puts "Clearing test environment"
         ENV.delete('HAB_CACHE_KEY_PATH')
+        #FileUtils.remove_entry(Hab.hab_key_cache)
         # TODO: kill the studio only if all tests pass?
         #ctx.cmd("studio rm")
     end
 
+    # these are in RSpec instead of Inspec because we
+    # keep some platform independent paths inside the ctx.
+    # Perhaps this could be shared in the future.
     context "core cli binaries" do
         it "hab command should be compiled" do
             expect(File.exist?(ctx.hab_bin)).to be true
@@ -141,32 +145,30 @@ describe "Habitat CLI" do
     context "install a core package" do
         it "should return a 0 exist status" do
             pkg_path = Pathname.new(ctx.hab_pkg_path).join("core", "bc")
+            # TODO: should we use a non-core package?
+            # TODO: what if it already exists? do we remove it or fail?
+            #       OR should that be declared up front and let inspec fail
+            #       if it already exists
+            # TODO: this test now depends on the Depot being up and running
             expect(File.exist?(pkg_path)).to eq false
-            expect(ctx.cmd("pkg install core/bd")).to eq 0
+            expect(ctx.cmd("pkg install core/bc")).to eq 0
             expect(File.exist?(pkg_path)).to eq true
         end
     end
 
-    #context "build a package" do
-    #    it "should build without failure" do
-    #        plan_dir = ctx.mk_temp_dir()
+    context "build a package" do
+        it "should build without failure" do
+            plan_dir = ctx.mk_temp_dir()
 
-    #        # TODO: don't hardcode this path
-    #        `cp -r /src/test/fixtures/simple-service/* #{plan_dir}`
-    #        # TODO: error handling with paths
-    #        #prev_cwd = Dir.getwd
-    #        #Dir.chdir "#{plan_dir}"
-    #        result = ctx.cmd("studio build #{plan_dir}")
-    #        #Dir.chdir "#{prev_cwd}"
-    #        #
-    #        expect(result).not_to be_nil
-    #        expect(result.success?).to be true
-    #    end
-    #end
+            FIXTURE IS MISSING AGAIN
+
+            # TODO: don't hardcode this path
+            `cp -r /src/test/fixtures/simple-service/* #{plan_dir}`
+            # TODO: error handling with paths
+            result = ctx.cmd("studio build #{plan_dir}")
+            expect(result).not_to be_nil
+            expect(result.success?).to be true
+        end
+    end
 end
 
-#puts "Cleaning up"
-## TODO
-#FileUtils.remove_entry(Hab.hab_key_cache)
-#
-#
