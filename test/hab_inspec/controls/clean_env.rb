@@ -21,9 +21,9 @@ hab_ports.each do |p|
 end
 
 hab_env_vars.each do |e|
+    puts "Ensuring #{e} isn't set"
     describe os_env(e) do
-        puts "Ensuring #{e} isn't set"
-        it { should eq nil }
+        its('content') { should eq nil }
     end
 end
 
